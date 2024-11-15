@@ -1,32 +1,24 @@
-import {
-  CoordinatesRequiredError,
-  InvalidCoordinatesError,
-} from '../common/errors';
 import { Direction, IRobotCoordinate } from '../common/types';
+import TableService from '../table/table.service';
 import Robot from './robot';
 
 export default class RobotService {
   protected readonly robot: Robot;
+  protected tableService: TableService;
 
   constructor(coordinate: IRobotCoordinate, direction: Direction) {
     this.robot = new Robot(coordinate, direction);
+    this.tableService = new TableService();
   }
 
-  moveRobot(newCoordinates: IRobotCoordinate, newDirection: Direction): void {
-    if (!newCoordinates) {
-      throw new CoordinatesRequiredError();
+  moveRobot(
+    newCoordinates: IRobotCoordinate,
+    newDirection: Direction,
+  ): void | Error {
+    const isValid = this.tableService.validateRobotPosition(newCoordinates);
+    if (isValid) {
+      this.robot.move(newCoordinates, newDirection);
     }
-
-    if (
-      newCoordinates.x < 0 ||
-      newCoordinates.x > 5 ||
-      newCoordinates.y < 0 ||
-      newCoordinates.y > 5
-    ) {
-      throw new InvalidCoordinatesError();
-    }
-
-    this.robot.move(newCoordinates, newDirection);
   }
 
   turnRobotLeft(): void {

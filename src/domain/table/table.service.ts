@@ -1,18 +1,38 @@
+import { ITableConfig, TableConfig } from '../../config/table.config';
+import {
+  EmptyCoordinatesError,
+  InvalidCoordinatesError,
+} from '../common/errors';
 import { IRobotCoordinate } from '../common/types';
 
 export default class TableService {
-  private readonly coordinates: IRobotCoordinate;
+  private readonly tableConfig: ITableConfig;
 
-  constructor(coordinates: IRobotCoordinate) {
-    this.coordinates = coordinates;
+  constructor() {
+    this.tableConfig = TableConfig;
   }
 
-  isRobotPositionValid(incomingCoordinates: IRobotCoordinate): boolean {
-    return (
-      incomingCoordinates.x >= 0 &&
-      incomingCoordinates.x <= this.coordinates.x &&
-      incomingCoordinates.y >= 0 &&
-      incomingCoordinates.y <= this.coordinates.y
-    );
+  validateRobotPosition(newCoordinates: IRobotCoordinate): boolean {
+    if (!newCoordinates) {
+      throw new EmptyCoordinatesError();
+    }
+
+    if (
+      !Number.isInteger(newCoordinates.x) ||
+      !Number.isInteger(newCoordinates.y)
+    ) {
+      throw new InvalidCoordinatesError();
+    }
+
+    if (
+      newCoordinates.x < 0 ||
+      newCoordinates.x > this.tableConfig.coordinates.X ||
+      newCoordinates.y < 0 ||
+      newCoordinates.y > this.tableConfig.coordinates.Y
+    ) {
+      throw new InvalidCoordinatesError();
+    }
+
+    return true;
   }
 }

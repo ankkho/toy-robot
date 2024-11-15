@@ -1,7 +1,7 @@
-export class CoordinatesRequiredError extends Error {
+export class EmptyCoordinatesError extends Error {
   constructor() {
     super('Coordinates cannot be empty');
-    this.name = 'CoordinatesRequiredError';
+    this.name = 'EmptyCoordinatesError';
   }
 }
 
