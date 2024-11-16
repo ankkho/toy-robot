@@ -1,15 +1,27 @@
+import { validCommands } from '../../config/command.config';
 import { ITableConfig, TableConfig } from '../../config/table.config';
 import {
   EmptyCoordinatesError,
   InvalidCoordinatesError,
 } from '../common/errors';
 import { IRobotCoordinate } from '../common/types';
+import { RobotNotPlacedError } from './errors';
 
 export default class TableService {
   private readonly tableConfig: ITableConfig;
+  private commandLog: Set<string>;
 
   constructor() {
     this.tableConfig = TableConfig;
+    this.commandLog = new Set();
+  }
+
+  setCommandToLog(command: string): void {
+    if (this.commandLog.size === 0 && !command.includes(validCommands.PLACE)) {
+      throw new RobotNotPlacedError();
+    }
+
+    this.commandLog.add(command);
   }
 
   validateRobotPosition(newCoordinates: IRobotCoordinate): boolean {
